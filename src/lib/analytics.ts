@@ -252,3 +252,40 @@ export function getTopArtists(tracks: Track[], limit: number = 10) {
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
 }
+
+/**
+ * Detect duplicate tracks (same artist and title)
+ * Returns groups of tracks that appear to be duplicates
+ */
+export function findDuplicateTracks(tracks: Track[]): Track[][] {
+  // Group tracks by normalized artist + title
+  const trackGroups = new Map<string, Track[]>();
+
+  for (const track of tracks) {
+    // Skip tracks with unknown/missing artist or title
+    if (
+      !track.artist ||
+      !track.title ||
+      track.artist === 'Unknown' ||
+      track.title === 'Unknown'
+    ) {
+      continue;
+    }
+
+    // Create normalized key for comparison
+    const key = `${track.artist.toLowerCase().trim()}|||${track.title.toLowerCase().trim()}`;
+
+    if (!trackGroups.has(key)) {
+      trackGroups.set(key, []);
+    }
+    trackGroups.get(key)!.push(track);
+  }
+
+  // Filter to only groups with 2+ tracks (duplicates)
+  const duplicateGroups = Array.from(trackGroups.values()).filter(
+    (group) => group.length > 1
+  );
+
+  // Sort groups by number of duplicates (most duplicates first)
+  return duplicateGroups.sort((a, b) => b.length - a.length);
+}

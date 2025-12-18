@@ -9,21 +9,23 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { getLibrary } from '@/lib/storage';
-import { computeAnalytics } from '@/lib/analytics';
+import { computeAnalytics, findDuplicateTracks } from '@/lib/analytics';
 import { StatsCards } from '@/components/stats-cards';
 import { GenreChart } from '@/components/charts/genre-chart';
 import { BpmChart } from '@/components/charts/bpm-chart';
 import { KeyChart } from '@/components/charts/key-chart';
 import { TimelineChart } from '@/components/charts/timeline-chart';
 import { TrackTable } from '@/components/track-table';
+import { DuplicatesList } from '@/components/dashboard/duplicates-list';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import type { Library, LibraryStats } from '@/types/library';
+import type { Library, LibraryStats, Track } from '@/types/library';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [library, setLibrary] = useState<Library | null>(null);
   const [stats, setStats] = useState<LibraryStats | null>(null);
+  const [duplicates, setDuplicates] = useState<Track[][]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -44,6 +46,10 @@ export default function DashboardPage() {
         // Compute analytics
         const analytics = computeAnalytics(lib);
         setStats(analytics);
+
+        // Find duplicates
+        const dupes = findDuplicateTracks(lib.tracks);
+        setDuplicates(dupes);
 
         setIsLoading(false);
       } catch (error) {
@@ -142,6 +148,11 @@ export default function DashboardPage() {
           <BpmChart data={stats.bpmDistribution} />
           <KeyChart data={stats.keyDistribution} />
           <TimelineChart data={stats.libraryGrowth} />
+        </div>
+
+        {/* Duplicates Section */}
+        <div className="mb-8">
+          <DuplicatesList duplicateGroups={duplicates} />
         </div>
 
         {/* Track Table */}

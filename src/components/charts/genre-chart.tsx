@@ -23,7 +23,7 @@ interface GenreChartProps {
 export function GenreChart({ data }: GenreChartProps) {
   // Show top 15 genres
   const topGenres = data.slice(0, 15);
-  const totalWithGenre = data.reduce((sum, item) => sum + item.count, 0);
+  const totalGenreOccurrences = data.reduce((sum, item) => sum + item.count, 0);
 
   if (topGenres.length === 0) {
     return (
@@ -41,21 +41,22 @@ export function GenreChart({ data }: GenreChartProps) {
       <div className="mb-4">
         <h3 className="text-lg font-semibold">Genre Distribution</h3>
         <p className="text-sm text-muted-foreground">
-          Top {topGenres.length} genres ({totalWithGenre.toLocaleString()} tracks)
+          Top {topGenres.length} genres ({totalGenreOccurrences.toLocaleString()} genre tags total)
         </p>
       </div>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={topGenres} layout="horizontal">
+        <BarChart data={topGenres}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis
-            type="number"
+            dataKey="genre"
+            angle={-45}
+            textAnchor="end"
+            height={100}
+            interval={0}
             className="text-xs"
-            tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
           />
           <YAxis
-            type="category"
-            dataKey="genre"
-            width={120}
             className="text-xs"
             tick={{ fill: 'hsl(var(--muted-foreground))' }}
           />
@@ -67,7 +68,7 @@ export function GenreChart({ data }: GenreChartProps) {
             }}
             labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
           />
-          <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </Card>
