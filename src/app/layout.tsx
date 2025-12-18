@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DJ Library Analyzer",
-  description: "Analyze your Rekordbox library with detailed statistics and insights",
+  description:
+    "Analyze your Rekordbox library with detailed statistics and insights",
 };
 
 export default function RootLayout({
@@ -29,6 +30,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <footer className="py-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            made with love by&nbsp;
+            <a
+              href="https://mikeybadr.com"
+              className="text-primary hover:underline"
+            >
+              Mikey Badr
+            </a>
+          </p>
+        </footer>
         <Toaster richColors position="top-right" />
       </body>
     </html>

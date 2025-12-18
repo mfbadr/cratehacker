@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
 /**
  * Upload landing page
  * Handles file upload and parsing with Web Worker
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { UploadZone } from '@/components/upload-zone';
-import { ProgressBar } from '@/components/progress-bar';
-import { saveLibrary } from '@/lib/storage';
-import type { Library } from '@/types/library';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { UploadZone } from "@/components/upload-zone";
+import { ProgressBar } from "@/components/progress-bar";
+import { saveLibrary } from "@/lib/storage";
+import type { Library } from "@/types/library";
 
-type ParsingState = 'idle' | 'parsing' | 'success' | 'error';
+type ParsingState = "idle" | "parsing" | "success" | "error";
 
 export default function HomePage() {
   const router = useRouter();
-  const [state, setState] = useState<ParsingState>('idle');
+  const [state, setState] = useState<ParsingState>("idle");
   const [progress, setProgress] = useState(0);
-  const [progressMessage, setProgressMessage] = useState('');
-  const [fileName, setFileName] = useState('');
+  const [progressMessage, setProgressMessage] = useState("");
+  const [fileName, setFileName] = useState("");
 
   // Initialize Web Worker
   const worker = useMemo(() => {
-    if (typeof window !== 'undefined') {
-      return new Worker(new URL('@/workers/parse-worker', import.meta.url));
+    if (typeof window !== "undefined") {
+      return new Worker(new URL("@/workers/parse-worker", import.meta.url));
     }
     return null;
   }, []);
@@ -38,33 +38,33 @@ export default function HomePage() {
       const { type, percent, message, library, error } = e.data;
 
       switch (type) {
-        case 'PARSE_PROGRESS':
+        case "PARSE_PROGRESS":
           setProgress(percent);
           setProgressMessage(message);
           break;
 
-        case 'PARSE_SUCCESS':
-          setState('success');
+        case "PARSE_SUCCESS":
+          setState("success");
           try {
             await saveLibrary(library as Library);
-            toast.success('Library analyzed successfully!', {
+            toast.success("Library analyzed successfully!", {
               description: `${library.tracks.length} tracks loaded`,
             });
             // Redirect to dashboard
             setTimeout(() => {
-              router.push('/dashboard');
+              router.push("/dashboard");
             }, 500);
           } catch (err) {
-            setState('error');
-            toast.error('Failed to save library', {
-              description: err instanceof Error ? err.message : 'Unknown error',
+            setState("error");
+            toast.error("Failed to save library", {
+              description: err instanceof Error ? err.message : "Unknown error",
             });
           }
           break;
 
-        case 'PARSE_ERROR':
-          setState('error');
-          toast.error('Failed to parse file', {
+        case "PARSE_ERROR":
+          setState("error");
+          toast.error("Failed to parse file", {
             description: error,
           });
           break;
@@ -72,8 +72,8 @@ export default function HomePage() {
     };
 
     worker.onerror = (error) => {
-      setState('error');
-      toast.error('Worker error', {
+      setState("error");
+      toast.error("Worker error", {
         description: error.message,
       });
     };
@@ -86,17 +86,17 @@ export default function HomePage() {
   const handleFileSelect = useCallback(
     (file: File) => {
       if (!worker) {
-        toast.error('Worker not initialized');
+        toast.error("Worker not initialized");
         return;
       }
 
-      setState('parsing');
+      setState("parsing");
       setFileName(file.name);
       setProgress(0);
-      setProgressMessage('Starting...');
+      setProgressMessage("Starting...");
 
       worker.postMessage({
-        type: 'PARSE_FILE',
+        type: "PARSE_FILE",
         file,
       });
     },
@@ -112,16 +112,16 @@ export default function HomePage() {
             DJ Library Analyzer
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload your Rekordbox XML export to analyze your music library with detailed
-            statistics, genre distributions, and insights.
+            Upload your Rekordbox XML export to analyze your music library with
+            detailed statistics, genre distributions, and insights.
           </p>
         </div>
 
         {/* Main content */}
         <div className="max-w-4xl mx-auto">
-          {state === 'idle' && <UploadZone onFileSelect={handleFileSelect} />}
+          {state === "idle" && <UploadZone onFileSelect={handleFileSelect} />}
 
-          {state === 'parsing' && (
+          {state === "parsing" && (
             <ProgressBar
               percent={progress}
               message={progressMessage}
@@ -129,7 +129,7 @@ export default function HomePage() {
             />
           )}
 
-          {state === 'success' && (
+          {state === "success" && (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 mb-4">
                 <svg
@@ -147,11 +147,13 @@ export default function HomePage() {
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold mb-2">Success!</h2>
-              <p className="text-muted-foreground">Redirecting to dashboard...</p>
+              <p className="text-muted-foreground">
+                Redirecting to dashboard...
+              </p>
             </div>
           )}
 
-          {state === 'error' && (
+          {state === "error" && (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900 mb-4">
                 <svg
@@ -173,7 +175,7 @@ export default function HomePage() {
                 Please check the error message above and try again.
               </p>
               <button
-                onClick={() => setState('idle')}
+                onClick={() => setState("idle")}
                 className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90"
               >
                 Try Again
@@ -183,7 +185,7 @@ export default function HomePage() {
         </div>
 
         {/* Features */}
-        {state === 'idle' && (
+        {state === "idle" && (
           <div className="mt-20 max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold text-center mb-8">
               What You'll Get
@@ -207,7 +209,8 @@ export default function HomePage() {
                 </div>
                 <h3 className="font-semibold mb-2">Detailed Statistics</h3>
                 <p className="text-sm text-muted-foreground">
-                  Track counts, artist diversity, genre distribution, and library growth over time
+                  Track counts, artist diversity, genre distribution, and
+                  library growth over time
                 </p>
               </div>
 
@@ -235,7 +238,8 @@ export default function HomePage() {
                 </div>
                 <h3 className="font-semibold mb-2">Visual Analytics</h3>
                 <p className="text-sm text-muted-foreground">
-                  Interactive charts for BPM, key distribution, and genre breakdowns
+                  Interactive charts for BPM, key distribution, and genre
+                  breakdowns
                 </p>
               </div>
 
@@ -257,7 +261,16 @@ export default function HomePage() {
                 </div>
                 <h3 className="font-semibold mb-2">100% Private</h3>
                 <p className="text-sm text-muted-foreground">
-                  All processing happens in your browser. Your data never leaves your device.
+                  All processing happens in your browser. Your data never leaves
+                  your device. This project is open-source, you can view the
+                  source code{" "}
+                  <a
+                    href="https://github.com/mfbadr/cratehacker"
+                    target="_blank"
+                    className="text-primary hover:underline"
+                  >
+                    here.
+                  </a>
                 </p>
               </div>
             </div>
