@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 /**
  * Library growth timeline chart
  */
 
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/ui/card";
 import {
   LineChart,
   Line,
@@ -13,8 +13,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts';
-import type { LibraryGrowth } from '@/types/library';
+} from "recharts";
+import type { LibraryGrowth } from "@/types/library";
 
 interface TimelineChartProps {
   data: LibraryGrowth[];
@@ -46,30 +46,33 @@ export function TimelineChart({ data }: TimelineChartProps) {
           <XAxis
             dataKey="month"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            tick={{ fill: "hsl(var(--muted-foreground))" }}
             angle={-45}
             textAnchor="end"
             height={60}
           />
           <YAxis
             className="text-xs"
-            tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            tick={{ fill: "hsl(var(--muted-foreground))" }}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
+              backgroundColor: "hsl(var(--popover))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "0.5rem",
             }}
-            labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
-            formatter={(value: number) => [`${value.toLocaleString()} tracks`, 'Total']}
+            labelStyle={{ color: "hsl(var(--popover-foreground))" }}
+            formatter={(value: number | undefined) => [
+              value !== undefined ? `${value.toLocaleString()} tracks` : "N/A",
+              "Total",
+            ]}
           />
           <Line
             type="monotone"
             dataKey="count"
             stroke="hsl(var(--primary))"
             strokeWidth={2}
-            dot={{ fill: 'hsl(var(--primary))' }}
+            dot={{ fill: "hsl(var(--primary))" }}
           />
         </LineChart>
       </ResponsiveContainer>
